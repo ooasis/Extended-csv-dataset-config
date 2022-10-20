@@ -44,6 +44,7 @@ public class ExtendedCsvDataSetBeanInfo extends BeanInfoSupport {
 	private static final String SHARE_MODE = "shareMode";
 	private static final String AUTO_ALLOCATE = "autoAllocate";
 	private static final String BLOCK_SIZE = "blockSize";
+	private static final String BATCH_SIZE = "batchSize";
 
 	private static final String[] SHARE_TAGS = new String[3];
 	static final int SHARE_ALL = 0;
@@ -86,7 +87,7 @@ public class ExtendedCsvDataSetBeanInfo extends BeanInfoSupport {
 		super(ExtendedCsvDataSet.class);
 
 		createPropertyGroup("csv_data", new String[] { FILENAME, FILE_ENCODING, VARIABLE_NAMES, IGNORE_FIRST_LINE,
-				DELIMITER, QUOTED_DATA, SELECT_ROW, UPDATE_VALUE, OOVALUE, SHARE_MODE });
+				DELIMITER, QUOTED_DATA, SELECT_ROW, UPDATE_VALUE, OOVALUE, SHARE_MODE, BATCH_SIZE });
 		createPropertyGroup("block_size", new String[]  { AUTO_ALLOCATE, BLOCK_SIZE });
 
 		PropertyDescriptor p = property(FILENAME);
@@ -168,6 +169,12 @@ public class ExtendedCsvDataSetBeanInfo extends BeanInfoSupport {
 		p.setValue(NOT_EXPRESSION, Boolean.FALSE);
 		p.setValue(TAGS, SHARE_TAGS);
 
+		p = property(BATCH_SIZE);
+		p.setValue(RESOURCE_BUNDLE, getBeanDescriptor().getValue(RESOURCE_BUNDLE));
+		p.setValue(NOT_UNDEFINED, Boolean.TRUE);
+		p.setValue(DEFAULT, 1);
+		p.setValue(NOT_EXPRESSION, Boolean.FALSE);
+
 		PropertyDescriptor allocateProp = property(AUTO_ALLOCATE);
 		allocateProp.setValue(NOT_UNDEFINED, Boolean.TRUE);
 		allocateProp.setValue(DEFAULT, Boolean.FALSE);
@@ -180,7 +187,6 @@ public class ExtendedCsvDataSetBeanInfo extends BeanInfoSupport {
 		allocateProp.setValue(NOT_EXPRESSION, Boolean.TRUE);
 		allocateProp.setDisplayName("Block size");
 		allocateProp.setShortDescription("Allocate block size for each thread ");
-
 	}
 
 	public static int getSelectRowAsInt(String mode) {

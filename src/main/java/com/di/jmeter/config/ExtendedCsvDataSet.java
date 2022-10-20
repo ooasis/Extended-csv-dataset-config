@@ -54,6 +54,7 @@ public class ExtendedCsvDataSet extends ConfigTestElement implements TestBean, L
 	private transient String shareMode;
 	private transient boolean autoAllocate;
 	private transient String blockSize;
+	private transient int batchSize;
 
 	private boolean recycle = false;
 	private transient String[] variables;
@@ -79,6 +80,17 @@ public class ExtendedCsvDataSet extends ConfigTestElement implements TestBean, L
 
 		JMeterVariables jMeterVariables = context.getVariables();
 
+		LOGGER.debug("Batch CSV size = " + batchSize);
+		if (batchSize <= 1) {
+			extracted(fServer, delimiter, lineValues, jMeterVariables, "");
+		} else {
+			for(int i = 0; i < batchSize; i++) {
+				extracted(fServer, delimiter, lineValues, jMeterVariables, "_" + i);
+			}
+		}
+	}
+
+	private void extracted(ExtFileServer fServer, String delimiter, String[] lineValues, JMeterVariables jMeterVariables, String postfix) {
 		// Select Row -> Sequential, Random, Unique
 		switch (ExtendedCsvDataSetBeanInfo.getSelectRowAsInt(getSelectRow())) {
 			case ExtendedCsvDataSetBeanInfo.SEQUENTIAL:
@@ -132,7 +144,7 @@ public class ExtendedCsvDataSet extends ConfigTestElement implements TestBean, L
 				LOGGER.debug("Each Iteration");
 				if(lineValues.length > 0){
 					for (int a = 0; a < variables.length && a < lineValues.length; a++) {
-						jMeterVariables.put(variables[a], lineValues[a]);
+						jMeterVariables.put(variables[a] + postfix, lineValues[a]);
 					}
 				}
 				break;
@@ -140,7 +152,7 @@ public class ExtendedCsvDataSet extends ConfigTestElement implements TestBean, L
 				LOGGER.debug("Once");
 				if(updateOnceFlag){
 					for (int a = 0; a < variables.length && a < lineValues.length; a++) {
-						jMeterVariables.put(variables[a], lineValues[a]);
+						jMeterVariables.put(variables[a] + postfix, lineValues[a]);
 					}
 					this.updateOnceFlag = false;
 				}
@@ -336,5 +348,13 @@ public class ExtendedCsvDataSet extends ConfigTestElement implements TestBean, L
 
 	public void setBlockSize(String blockSize) {
 		this.blockSize = blockSize;
+	}
+
+	public int getBatchSize() {
+		return batchSize;
+	}
+
+	public void setBatchSize(int batchSize) {
+		this.batchSize = batchSize;
 	}
 }
